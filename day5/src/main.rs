@@ -20,7 +20,7 @@ fn main() {
     let instructions = parse_instructions(&contents);
 
     for instruction in instructions {
-        println!("Handling: Move {} from {} to {}", instruction.num, instruction.from, instruction.to);
+        //println!("Handling: Move {} from {} to {}", instruction.num, instruction.from, instruction.to);
         state.move_crates(instruction.from, instruction.to, instruction.num);
     }
 
@@ -50,7 +50,7 @@ fn parse_instructions(contents :&str) -> Vec<Instruction> {
         instructions.push(Instruction { 
             num: bits[1].parse::<usize>().unwrap(), 
             from: bits[3].parse::<u16>().unwrap(), 
-            to: bits[5].parse::<u16>().unwrap()});
+            to: bits[5].replace("\r", "").parse::<u16>().unwrap()});
     }
 
     instructions
@@ -126,12 +126,11 @@ impl CargoColumn {
 
     fn remove(&mut self, size: usize) -> Vec<char> {
 
-        dbg!(self.cargo_column.len());
         if self.cargo_column.len() > size {
             let mut removed = vec![' '; size];
             removed.clone_from_slice(&self.cargo_column[0..size]);
 
-            for i in 0..size {
+            for _i in 0..size {
                 self.cargo_column.remove(0);
             }
 
