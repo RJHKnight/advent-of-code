@@ -20,7 +20,6 @@ fn main() {
         let our_move = get_required_move(&their_move, &result);
         let this_score = get_score(our_move, &their_move);
 
-        print!(" Score = {} \n", &this_score);
         total_score += this_score;
     }
 
@@ -117,8 +116,6 @@ fn get_required_move<'a>(their_move :&'a Move, result :&'a Result) -> &'a Move {
 fn get_score(our_move :&Move, their_move :&Move) -> u32 {
 
     let result = get_result(our_move, their_move);
-
-    print!("{:?} vs. {:?} - result is {:?}", our_move, their_move, &result);
 
     let move_score = our_move.clone() as u32;
     match result {
