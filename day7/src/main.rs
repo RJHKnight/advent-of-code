@@ -1,4 +1,4 @@
-use std::{fs, collections::{HashSet, HashMap}};
+use std::{fs, collections::HashMap};
 use crate::Command::{CD,LS};
 
 fn main() {
