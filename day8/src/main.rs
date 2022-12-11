@@ -41,10 +41,81 @@ fn main() {
 
     let num_external = 2 * num_row + (2 * (num_col -2));
     let num_internal = unique_trees.len();
-    print!("Internal: {}, External: {}, Total: {}", num_internal, num_external, num_internal+num_external);
+    println!("Internal: {}, External: {}, Total: {}", num_internal, num_external, num_internal+num_external);
+
+    let mut max_score = 0;
+
+    // for tree in unique_trees {
+       
+    //     let this_score = get_visible_tree(&tree, Direction::Down, &grid) *
+    //             get_visible_tree(&tree, Direction::Up, &grid) *
+    //             get_visible_tree(&tree, Direction::LeftToRight, &grid) *
+    //             get_visible_tree(&tree, Direction::RightToLeft, &grid);
+                
+    //     if this_score > max_score {
+    //         println!("Score for {:?} is {}", tree, this_score);
+    //         max_score = this_score;
+    //     }
+    // }
+
+    for i in 1..num_row-1 {
+        for j in 1..num_col-1 {
+
+                let tree = Position{row: i, col: j};
+                let this_score = get_visible_tree(&tree, Direction::Down, &grid) *
+                    get_visible_tree(&tree, Direction::Up, &grid) *
+                    get_visible_tree(&tree, Direction::LeftToRight, &grid) *
+                    get_visible_tree(&tree, Direction::RightToLeft, &grid);
+            
+            println!("Score for {:?} is {}", tree, this_score);
+
+            if this_score > max_score {
+                max_score = this_score;
+            }
+        }
+    }
+
+
+    println!("Max Score: {}", max_score);
 
 }
 
+fn get_visible_tree(position: &Position, direction: Direction, grid : &Vec<Vec<u32>>) -> usize {
+    
+
+    if (position.row == 14 && position.col == 52) {
+        println!("TOOOY");
+    }
+
+    let num_col = grid[0].len();
+    let num_row = grid.len();
+        
+    let array: Box<dyn Iterator<Item=usize>> = match direction {
+        Direction::Down => Box::new(position.row+1..num_row),
+        Direction::Up => Box::new((0..position.row).rev()),
+        Direction::LeftToRight => Box::new(position.col+1..num_col),
+        Direction::RightToLeft => Box::new((0..position.col).rev()),
+    };
+
+    let mut count = 0;
+    let my_size = grid[position.row][position.col];
+    let is_up_down = direction == Direction::Up || direction == Direction::Down;
+
+    for i in array {
+
+        let this_value = if is_up_down { grid[i][position.col]} else { grid[position.row][i]};
+        count = count + 1;
+        
+        if this_value >= my_size {
+            break;
+        }
+    }
+
+    //println!("Visible trees for {:?} in Direction {:?} is {}", position, direction, count);
+    count
+
+}
+ 
 fn get_visible_tree_row(row: usize, direction: Direction, grid : &Vec<Vec<u32>>) -> Vec<Position> {
 
     let num_col = grid[0].len();
@@ -52,10 +123,10 @@ fn get_visible_tree_row(row: usize, direction: Direction, grid : &Vec<Vec<u32>>)
     let array:  Box<dyn Iterator<Item=usize>>;
 
     if direction == Direction::LeftToRight {
-        array = Box::new(0..=(num_col-1));
+        array = Box::new(0..num_col);
     }
     else {
-        array = Box::new((0..=(num_col-1)).rev());
+        array = Box::new((0..num_col).rev());
     }
 
     let mut res = Vec::new();
@@ -63,7 +134,7 @@ fn get_visible_tree_row(row: usize, direction: Direction, grid : &Vec<Vec<u32>>)
 
     for i in array {
         if grid[row][i] > max_size {
-            let position = Position{x: row, y: i};
+            let position = Position{row: row, col: i};
             res.push(position);
             max_size = grid[row][i];
         }
@@ -82,10 +153,10 @@ fn get_visible_tree_col(col: usize, direction: Direction, grid : &Vec<Vec<u32>>)
     let array:  Box<dyn Iterator<Item=usize>>;
 
     if direction == Direction::Down {
-        array = Box::new(0..=(num_row-1));
+        array = Box::new(0..num_row);
     }
     else {
-        array = Box::new((0..=(num_row-1)).rev());
+        array = Box::new((0..num_row).rev());
     }
 
     let mut res = Vec::new();
@@ -93,7 +164,7 @@ fn get_visible_tree_col(col: usize, direction: Direction, grid : &Vec<Vec<u32>>)
 
     for i in array {
         if grid[i][col] > max_size {
-            let position = Position{x: i, y: col};
+            let position = Position{row: i, col: col};
             res.push(position);
             max_size = grid[i][col];
         }
@@ -115,16 +186,16 @@ enum Direction {
 
 #[derive(PartialEq, Eq, Hash, Debug, Clone)]
 struct Position {
-    x : usize,
-    y : usize
+    row : usize,
+    col : usize
 }
 
 impl  Position {
     
-    fn is_edge(&self, max_x: usize, max_y: usize) -> bool {
-        self.x == max_x-1 ||
-        self.x == 0 ||
-        self.y == max_y-1 ||
-        self.y == 0
+    fn is_edge(&self, max_row: usize, max_col: usize) -> bool {
+        self.row == max_row-1 ||
+        self.row == 0 ||
+        self.col == max_col-1 ||
+        self.col == 0
     }
 }
